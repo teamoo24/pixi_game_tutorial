@@ -1,0 +1,26 @@
+{
+  "name": "pixi_game_tutorial",
+  "version": "1.0.0",
+  "description": "\"my first pixi js game\"",
+  "main": "index.js",
+  "scripts": {
+    "tsc": "tsc -p .",
+    "tslint": "tslint -p .",
+    "tslint:fix": "tslint -p . --fix",
+    "typedoc": "typedoc -p .",
+    "webpack" : "webpack",
+    "server": "webpack-dev-server"
+  },
+  "author": "han",
+  "license": "ISC",
+  "dependencies": {
+    "ts-loader": "^6.2.1",
+    "tslint": "^6.0.0",
+    "tslint-config-airbnb": "^5.11.2",
+    "typedoc": "^0.16.9",
+    "typescript": "^3.7.5",
+    "webpack": "^4.41.5",
+    "webpack-cli": "^3.3.10",
+    "webpack-dev-server": "^3.10.2"
+  }
+}
