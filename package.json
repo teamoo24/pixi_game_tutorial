@@ -8,12 +8,14 @@
     "tslint": "tslint -p .",
     "tslint:fix": "tslint -p . --fix",
     "typedoc": "typedoc -p .",
-    "webpack" : "webpack",
+    "webpack": "webpack",
     "server": "webpack-dev-server"
   },
   "author": "han",
   "license": "ISC",
   "dependencies": {
+    "@types/pixi.js": "^5.0.0",
+    "pixi.js": "^5.2.1",
     "ts-loader": "^6.2.1",
     "tslint": "^6.0.0",
     "tslint-config-airbnb": "^5.11.2",
