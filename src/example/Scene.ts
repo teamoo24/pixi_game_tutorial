@@ -13,6 +13,17 @@ export default abstract class Scene extends PIXI.Container{
 
 	// registerUpdatingObjectで登録されたオブジェクトのフレーム更新
 	protected updateRegisteredObjects(delta: number):void {
+	}
 
+	// シーン開始トランジット
+	// 引数はトランジション終了時のコールバック
+	public beginTransitionIn(onTransitionFinished: (scene: Scene) => void): void {
+		onTransitionFinished(this);
+	}
+
+	// シーン終了トランジション
+	// 引数でトランジション終了時のコールバック
+	public beginTransitionOut(onTransitionFinished: (scene: Scene)=> void): void {
+		onTransitionFinished(this);
 	}
 }
