@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js'
-import GameManager from './GameManager'
+import GameManager from './example/GameManager'
+import FirstScene from './example/FirstScene'
 
 window.onload = () => {
 	GameManager.start({
@@ -9,4 +10,11 @@ window.onload = () => {
 			backgroundColor: 0x222222
 		}
 	})
+	// 最初のシーンの読み込み
+  GameManager.loadScene(new FirstScene());
+
+  // コンソールからオブジェクトを調査できるように window に生やす
+  Debug: {
+    (window as any).GameManager = GameManager;
+  }
 };

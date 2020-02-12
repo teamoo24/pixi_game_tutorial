@@ -13,7 +13,18 @@ export default class GameManager {
         this.game = app;
     }
     /**
-    *	可能であれば新しいシーンへのトランジションを開始する
+    *	可能であれば新しいシーンへのトランジションを開始するメソッドを設定する
+    *		・トランジション開始を処理するメソッドの名称を「transitionInIfPossible」としているのは、トランジション開始処理の排他をこのメソッドで
+    *		  行なっていることを明確にするためです
+    *		・新しいシーンのトランジション開始が排他される条件には、単純に前のシーンのトランジション終了が完了していないという理由のほかに、新しいシーン
+    *		  でするリソースの取得が終わっておらず描画できない状態である、という理由などがあります。
+    *
+    *	以下は現時点の実装で現在のシーンがある状態とない状態の状態遷移を表したものです。
+    *		・現在のシーンがない場合
+    *			- 新しいシーン -> new() -> Transition In 開始 ->  Transition In 終了 -> Active -> new()
+    *		・現在のシーンがある場合
+    *			- 古いシーン -> Active -> Transition Out 開始 -> Transition Out 終了 -> Destroy
+    *			- 新しいシーン -> new()											  -> Transition In 開始 -> Transition In 終了 -> Active
     */
     static transitionInIfPossible(newScene) {
         const instance = GameManager.instance;
@@ -56,11 +67,14 @@ export default class GameManager {
         // PIXI Applicatio生成
         const game = new PIXI.Application(params.glHeight, params.glHeight, params.option);
         // GameManagerインスタンス生成
-        GameManager.instance = new GameManager(game);
+        const instance = new GameManager(game);
         // canvasをDOM追加
         document.body.appendChild(game.view);
         game.ticker.add((delta) => {
             // メインループ
+            if (instance.currentScene) {
+                instance.currentScene.update(delta);
+            }
         });
     }
 }

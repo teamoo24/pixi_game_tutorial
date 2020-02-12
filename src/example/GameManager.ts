@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import Scene from './example/Scene'
+import Scene from './Scene'
 
 
 export default class GameManager {
@@ -97,12 +97,14 @@ export default class GameManager {
 		const game = new PIXI.Application(params.glHeight, params.glHeight, params.option)
 		// GameManagerインスタンス生成
 		const instance = new GameManager(game);
+		GameManager.instance = instance
 
 		// canvasをDOM追加
 		document.body.appendChild(game.view);
 
+
+		// メインループ
 		game.ticker.add((delta:number) => {
-			// メインループ
 			if (instance.currentScene) {
 				instance.currentScene.update(delta)
 			}
