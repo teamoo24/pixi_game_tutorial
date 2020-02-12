@@ -40,7 +40,7 @@ export default class SecondScene extends Scene {
 	public update(dt: number): void {
 		super.update(dt);
 
-		this.text.text = 'second scene \n${this.count++}';
+		this.text.text = 'second scene \n'+this.count++;
 	}
 
 	/**

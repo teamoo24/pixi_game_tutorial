@@ -68,10 +68,11 @@ export default class GameManager {
         const game = new PIXI.Application(params.glHeight, params.glHeight, params.option);
         // GameManagerインスタンス生成
         const instance = new GameManager(game);
+        GameManager.instance = instance;
         // canvasをDOM追加
         document.body.appendChild(game.view);
+        // メインループ
         game.ticker.add((delta) => {
-            // メインループ
             if (instance.currentScene) {
                 instance.currentScene.update(delta);
             }

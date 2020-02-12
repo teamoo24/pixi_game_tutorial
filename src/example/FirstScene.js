@@ -1,4 +1,6 @@
+import * as PIXI from 'pixi.js';
 import GameManager from "./GameManager";
+import SecondScene from './SecondScene';
 import Scene from "./Scene";
 export default class FirstScene extends Scene {
     /**
@@ -26,11 +28,12 @@ export default class FirstScene extends Scene {
     */
     update(dt) {
         super.update(dt);
-        this.text.text = 'first scene ¥n${this.count++}';
+        this.text.text = 'first scene \n${this.count++}';
     }
     /**
     * SecondSceneのロード
     */
     nextScene() {
+        GameManager.loadScene(new SecondScene());
     }
 }
