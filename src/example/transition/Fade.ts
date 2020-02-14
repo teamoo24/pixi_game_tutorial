@@ -6,7 +6,7 @@ import GameManager from '../GameManager'
 export default class Fade implements Transition {
 
 	// フェード開始時の黒画面アルファ
-	private alphaForm!: number;
+	private alphaFrom!: number;
 	// フェード終了時の黒画面アルファ
 	private alphaTo!: number;
 	// 1フレーム毎に黒画面アルファ加算値
@@ -23,26 +23,27 @@ export default class Fade implements Transition {
 	private onTransitionFinished: () => void = () => {};
 
 	constructor(alphaFrom: number, alphaTo: number, alphaProgress: number) {
-		this.alphaForm = alphaFrom;
+		this.alphaFrom = alphaFrom;
 		this.alphaTo = alphaTo;
 		this.alphaProgress = alphaProgress;
 
 		const width = GameManager.instance.game.view.width;
 		const height = GameManager.instance.game.view.height;
 
-		this.overlay.beginFill(0x000000);
-		this.overlay.moveTo(0, 0);
-		this.overlay.lineTo(width, 0);
-		this.overlay.lineTo(width, height);
-		this.overlay.lineTo(0, height);
-		this.overlay.endFill();
+		// フェード用の黒い画面
+	    this.overlay.beginFill(0x000000);
+	    this.overlay.moveTo(0, 0);
+	    this.overlay.lineTo(width, 0);
+	    this.overlay.lineTo(width, height);
+	    this.overlay.lineTo(0, height);
+	    this.overlay.endFill();
 
-		this.overlay.alpha = this.alphaForm;
+	    this.overlay.alpha = this.alphaFrom;
 
-		this.container.addChild(this.overlay);
-	}
+	    this.container.addChild(this.overlay);
+		}
 
-	public getContainer(): PIXI.Container | null {
+		public getContainer(): PIXI.Container | null {
 		return this.container;
 	}
 
@@ -66,8 +67,8 @@ export default class Fade implements Transition {
 		if (this.isFinished()) return;
 
 		if (
-			(this.alphaTo <= this.alphaForm && this.overlay.alpha <= this.alphaTo) ||
-			(this.alphaTo >= this.alphaForm && this.overlay.alpha >= this.alphaTo) ) {
+			(this.alphaTo <= this.alphaFrom && this.overlay.alpha <= this.alphaTo) ||
+			(this.alphaTo >= this.alphaFrom && this.overlay.alpha >= this.alphaTo) ) {
 				this.onTransitionFinished();
 		} else {
 			this.overlay.alpha += this.alphaProgress;

@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js'
 import GameManager from "./GameManager"
 import SecondScene from './SecondScene'
+import Fade from './transition/Fade'
 import Scene from "./Scene"
 
 export default class FirstScene extends Scene {
@@ -14,6 +15,9 @@ export default class FirstScene extends Scene {
 	*/
 	constructor() {
 		super();
+
+		this.transitionIn  = new Fade(1.0, 0.0, -0.01);
+    	this.transitionOut = new Fade(0.0, 1.0, 0.01);
 
 		const textStyle = new PIXI.TextStyle({
 			fontSize : 64,
