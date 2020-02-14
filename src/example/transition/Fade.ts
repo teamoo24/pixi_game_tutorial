@@ -1,0 +1,80 @@
+import * as PIXI from 'pixi.js'
+import Transition from '../../interfaces/Transition'
+import GameManager from '../GameManager'
+
+
+export default class Fade implements Transition {
+
+	// フェード開始時の黒画面アルファ
+	private alphaForm!: number;
+	// フェード終了時の黒画面アルファ
+	private alphaTo!: number;
+	// 1フレーム毎に黒画面アルファ加算値
+	private alphaProgress: number;
+	// 黒画面のコンテナ
+	private container = new PIXI.Container();
+	// 黒画面の描画
+	private overlay = new PIXI.Graphics();
+	// トランジション開始フラグ
+	private transitionBegan: boolean = false;
+	// トランジション終了フラグ
+	private transitionFinished: boolean = false;
+	// トランジション終了コールバック
+	private onTransitionFinished: () => void = () => {};
+
+	constructor(alphaFrom: number, alphaTo: number, alphaProgress: number) {
+		this.alphaForm = alphaFrom;
+		this.alphaTo = alphaTo;
+		this.alphaProgress = alphaProgress;
+
+		const width = GameManager.instance.game.view.width;
+		const height = GameManager.instance.game.view.height;
+
+		this.overlay.beginFill(0x000000);
+		this.overlay.moveTo(0, 0);
+		this.overlay.lineTo(width, 0);
+		this.overlay.lineTo(width, height);
+		this.overlay.lineTo(0, height);
+		this.overlay.endFill();
+
+		this.overlay.alpha = this.alphaForm;
+
+		this.container.addChild(this.overlay);
+	}
+
+	public getContainer(): PIXI.Container | null {
+		return this.container;
+	}
+
+	public begin(): void {
+		this.transitionBegan = true;
+	}
+
+	public isBegan(): boolean {
+		return this.transitionBegan;
+	}
+
+	public isFinished(): boolean {
+		return this.transitionFinished
+	}
+	public isActive(): boolean {
+		return this.isBegan() && !this.isFinished();
+	}
+
+	public update(_dt: number): void {
+		if (!this.isBegan()) return;
+		if (this.isFinished()) return;
+
+		if (
+			(this.alphaTo <= this.alphaForm && this.overlay.alpha <= this.alphaTo) ||
+			(this.alphaTo >= this.alphaForm && this.overlay.alpha >= this.alphaTo) ) {
+				this.onTransitionFinished();
+		} else {
+			this.overlay.alpha += this.alphaProgress;
+		}
+	}
+
+	public setCallback(callback: () => void): void {
+		this.onTransitionFinished = callback;
+	}
+}

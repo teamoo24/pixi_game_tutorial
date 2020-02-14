@@ -29,7 +29,7 @@ export default class SecondScene extends Scene {
     */
     update(dt) {
         super.update(dt);
-        this.text.text = 'second scene \n${this.count++}';
+        this.text.text = 'second scene \n' + this.count++;
     }
     /**
     *	次のシーンへの遷移

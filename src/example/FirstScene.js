@@ -9,16 +9,17 @@ export default class FirstScene extends Scene {
     */
     constructor() {
         super();
-        // メインループ更新を確認するためのカウントkaunnto
+        // メインループ更新を確認するためのカウント
         this.count = 0;
         const textStyle = new PIXI.TextStyle({
             fontSize: 64,
             fill: 0xffffff
         });
-        const renderer = GameManager.instance.game.render;
+        const renderer = GameManager.instance.game.renderer;
         this.text = new PIXI.Text('first scene', textStyle);
         this.text.interactive = true;
         this.text.anchor.set(0.5, 0.5);
+        this.text.position.set(renderer.width * 0.5, renderer.height * 0.5);
         this.text.on('pointerdown', this.nextScene);
         this.addChild(this.text);
     }
@@ -28,7 +29,7 @@ export default class FirstScene extends Scene {
     */
     update(dt) {
         super.update(dt);
-        this.text.text = 'first scene \n${this.count++}';
+        this.text.text = 'first scene \n' + this.count++;
     }
     /**
     * SecondSceneのロード

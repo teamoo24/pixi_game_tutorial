@@ -5,7 +5,7 @@ import Scene from "./Scene"
 
 export default class FirstScene extends Scene {
 	private text!: PIXI.Text;
-	// メインループ更新を確認するためのカウントkaunnto
+	// メインループ更新を確認するためのカウント
 	private count: number = 0;
 
 	/**
