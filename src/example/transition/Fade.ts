@@ -70,6 +70,7 @@ export default class Fade implements Transition {
 			(this.alphaTo <= this.alphaFrom && this.overlay.alpha <= this.alphaTo) ||
 			(this.alphaTo >= this.alphaFrom && this.overlay.alpha >= this.alphaTo) ) {
 				this.onTransitionFinished();
+				this.transitionFinished = true
 		} else {
 			this.overlay.alpha += this.alphaProgress;
 		}
