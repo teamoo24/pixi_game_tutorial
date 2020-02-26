@@ -5,88 +5,94 @@ import Fade from './transition/Fade'
 
 
 /**
- * ゲームシーンの抽象クラス
- * UiGraph を利用して UI 情報を透過的に読み込み初期化する
- * また、シーン間のトランジションイベントを提供する
- * いずれのイベントも実装クラスにて独自処理の実装を行うことができる
- */
-export default abstract class Scene extends PIXI.Container {
-  /**
-   * 更新すべきオブジェクトを保持する
-   */
-  protected objectsToUpdate: UpdateObject[] = [];
-  /**
-   * シーン開始用のトランジションオブジェクト
-   */
-  protected transitionIn:  Transition = new Immediate();
-  /**
-   * シーン終了用のトランジションオブジェクト
-   */
-  protected transitionOut: Transition = new Immediate();
+*	このゲームにおけるトランジション
+*		* 描画物を持つ
+*		* メインループによる時間経過で描画物や状態を変化する
+*		* 状態は外部から制御させない
+*		* 処理終了時に実行するコールバックを設定できる
+*		* 自然消滅する
+*		* シーンを直接扱わない
+*/
 
-  /**
-   * GameManager によって requestAnimationFrame 毎に呼び出されるメソッド
-   */
-  public update(delta: number): void {
-    if (this.transitionIn.isActive()) {
-      this.transitionIn.update(delta);
-    } else if (this.transitionOut.isActive()) {
-      this.transitionOut.update(delta);
-    }
-  }
+export default abstract class Scene extends PIXI.Container{
+	/**
+	*	更新すべきオブジェクトを保持する
+	*/
+	protected objectsToUpdate: UpdateObject[] = []
 
-  /**
-   * 更新処理を行うべきオブジェクトとして渡されたオブジェクトを登録する
-   */
-  protected registerUpdatingObject(object: UpdateObject): void {
-    this.objectsToUpdate.push(object);
-  }
+	/**
+	*	シーン開始用のトランジションオブジェクト
+	*/
+	protected transitionIn: Transition = new Immediate();
 
-  /**
-   * 更新処理を行うべきオブジェクトを更新する
-   */
-  protected updateRegisteredObjects(delta: number): void {
-    const nextObjectsToUpdate = [];
+	/**
+	*	シーン終了用のトランジションオブジェクト
+	*/
+	protected transitionOut: Transition = new Immediate();
 
-    for (let i = 0; i < this.objectsToUpdate.length; i++) {
-      const obj = this.objectsToUpdate[i];
-      if (!obj || obj.isDestroyed()) {
-          continue;
-      }
-      obj.update(delta);
-      nextObjectsToUpdate.push(obj);
-    }
+	/**
+	*	GameManagerによってrequestAnimationFrame毎に呼び出されるメソッド
+	*/
+	public update(delta: number) : void {
+		if(this.transitionIn.isActive()) {
+			this.transitionIn.update(delta);
+		} else if (this.transitionOut.isActive()) {
+			this.transitionOut.update(delta);
+		}
+	}
 
-    this.objectsToUpdate = nextObjectsToUpdate;
-  }
+	/**
+	* 更新処理を行うべきオブジェクトとして渡されたオブジェクトを登録する
+	*/
+	protected registerUpdatingObject(object: UpdateObject): void {
+		this.objectsToUpdate.push(object);
+	}
 
-  /**
-   * シーン追加トランジション開始
-   * 引数でトランジション終了時のコールバックを指定できる
-   */
-  public beginTransitionIn(onTransitionFinished: (scene: Scene) => void): void {
-    this.transitionIn.setCallback(() => onTransitionFinished(this));
+	/**
+	* 更新処理を行うべきオブジェクトを更新する
+	*/
+	protected updateRegisteredObjects(delta: number):void {
+		const nextObjectsToUpdate = [];
 
-    const container = this.transitionIn.getContainer();
-    if (container) {
-      this.addChild(container);
-    }
+		for (let i = 0; i < this.objectsToUpdate.length; i++) {
+			const obj = this.objectsToUpdate[i];
+			if(!obj || obj.isDestroyed()) {
+				continue;
+			}
+			obj.update(delta);
+			nextObjectsToUpdate.push(obj);
+		}
 
-    this.transitionIn.begin();
-  }
+		this.objectsToUpdate = nextObjectsToUpdate;
+	}
 
-  /**
-   * シーン削除トランジション開始
-   * 引数でトランジション終了時のコールバックを指定できる
-   */
-  public beginTransitionOut(onTransitionFinished: (scene: Scene) => void): void {
-    this.transitionOut.setCallback(() => onTransitionFinished(this));
+	/**
+	*	シーン追加トランジション開始
+	*	引数でトランジション終了時のコールバックを指定できる
+	*/
+	public beginTransitionIn(onTransitionFinished: (scene: Scene) => void): void {
+		this.transitionIn.setCallback(() => onTransitionFinished(this));
 
-    const container = this.transitionOut.getContainer();
-    if (container) {
-      this.addChild(container);
-    }
+		const container = this.transitionIn.getContainer();
+		if (container) {
+			this.addChild(container);
+		}
 
-    this.transitionOut.begin();
-  }
+		this.transitionIn.begin();
+	}
+
+	/**
+	*	シーン削除トランジション開始
+	*	引数でトランジション終了時のコールバックを指定できる
+	*/
+	public beginTransitionOut(onTransitionFinished: (scene: Scene)=> void): void {
+		this.transitionOut.setCallback(() => onTransitionFinished(this));
+
+		const container = this.transitionOut.getContainer();
+		if (container) {
+			this.addChild(container);
+		}
+
+		this.transitionOut.begin();
+	}
 }
