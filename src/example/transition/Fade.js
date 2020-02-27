@@ -12,18 +12,19 @@ export default class Fade {
         this.transitionFinished = false;
         // トランジション終了コールバック
         this.onTransitionFinished = () => { };
-        this.alphaForm = alphaFrom;
+        this.alphaFrom = alphaFrom;
         this.alphaTo = alphaTo;
         this.alphaProgress = alphaProgress;
         const width = GameManager.instance.game.view.width;
         const height = GameManager.instance.game.view.height;
+        // フェード用の黒い画面
         this.overlay.beginFill(0x000000);
         this.overlay.moveTo(0, 0);
         this.overlay.lineTo(width, 0);
         this.overlay.lineTo(width, height);
         this.overlay.lineTo(0, height);
         this.overlay.endFill();
-        this.overlay.alpha = this.alphaForm;
+        this.overlay.alpha = this.alphaFrom;
         this.container.addChild(this.overlay);
     }
     getContainer() {
@@ -46,9 +47,10 @@ export default class Fade {
             return;
         if (this.isFinished())
             return;
-        if ((this.alphaTo <= this.alphaForm && this.overlay.alpha <= this.alphaTo) ||
-            (this.alphaTo >= this.alphaForm && this.overlay.alpha >= this.alphaTo)) {
+        if ((this.alphaTo <= this.alphaFrom && this.overlay.alpha <= this.alphaTo) ||
+            (this.alphaTo >= this.alphaFrom && this.overlay.alpha >= this.alphaTo)) {
             this.onTransitionFinished();
+            this.transitionFinished = true;
         }
         else {
             this.overlay.alpha += this.alphaProgress;

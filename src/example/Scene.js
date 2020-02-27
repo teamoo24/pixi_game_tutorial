@@ -1,4 +1,5 @@
-import Fade from './transition/Fade';
+import * as PIXI from 'pixi.js';
+import Immediate from './transition/immediate';
 /**
 *	このゲームにおけるトランジション
 *		* 描画物を持つ
@@ -18,11 +19,47 @@ export default class Scene extends PIXI.Container {
         /**
         *	シーン開始用のトランジションオブジェクト
         */
-        this.transitionIn = new Fade(1.0, 0.0, -0.01);
+        this.transitionIn = new Immediate();
         /**
         *	シーン終了用のトランジションオブジェクト
         */
-        this.transitionOut = new Fade(0.0, 1.0, 0.01);
+        this.transitionOut = new Immediate();
+    }
+    /**
+    * リソースリストを作成して返却する
+    */
+    createInitialResourceList() {
+        return [];
+    }
+    /**
+    * リソースダウンロードのフローを実行する
+    */
+    beginLoadResource(onLoaded) {
+        return new Promise((resolve) => {
+            this.loadInitialResource(() => resolve());
+        }).then(() => {
+            onLoaded();
+        }).then(() => {
+            this.onResourceLoaded();
+        });
+    }
+    /**
+    * 最初に指定されたリソースをダウンロードする
+    */
+    loadInitialResource(onLoaded) {
+        const assets = this.createInitialResourceList();
+        const filteredAssets = this.filterLoadedAssets(assets);
+        if (filteredAssets.length > 0) {
+            PIXI.loader.add(filteredAssets).load(() => onLoaded());
+        }
+        else {
+            onLoaded();
+        }
+    }
+    /**
+    * beginLoadResource 完了時のコールバックメソッド
+    */
+    onResourceLoaded() {
     }
     /**
     *	GameManagerによってrequestAnimationFrame毎に呼び出されるメソッド
@@ -35,11 +72,26 @@ export default class Scene extends PIXI.Container {
             this.transitionOut.update(delta);
         }
     }
-    //メインループで更新処理を行うべきオブジェクトの登録
+    /**
+    * 更新処理を行うべきオブジェクトとして渡されたオブジェクトを登録する
+    */
     registerUpdatingObject(object) {
+        this.objectsToUpdate.push(object);
     }
-    // registerUpdatingObjectで登録されたオブジェクトのフレーム更新
+    /**
+    * 更新処理を行うべきオブジェクトを更新する
+    */
     updateRegisteredObjects(delta) {
+        const nextObjectsToUpdate = [];
+        for (let i = 0; i < this.objectsToUpdate.length; i++) {
+            const obj = this.objectsToUpdate[i];
+            if (!obj || obj.isDestroyed()) {
+                continue;
+            }
+            obj.update(delta);
+            nextObjectsToUpdate.push(obj);
+        }
+        this.objectsToUpdate = nextObjectsToUpdate;
     }
     /**
     *	シーン追加トランジション開始
@@ -51,7 +103,7 @@ export default class Scene extends PIXI.Container {
         if (container) {
             this.addChild(container);
         }
-        this.transitionOut.begin();
+        this.transitionIn.begin();
     }
     /**
     *	シーン削除トランジション開始
@@ -64,5 +116,25 @@ export default class Scene extends PIXI.Container {
             this.addChild(container);
         }
         this.transitionOut.begin();
+    }
+    /**
+    * 渡されたアセットのリストからロード済みのものをフィルタリングする
+    */
+    filterLoadedAssets(assets) {
+        const assetMap = new Map();
+        for (let i = 0; i < assets.length; i++) {
+            const asset = assets[i];
+            if (typeof asset === 'string') {
+                if (!PIXI.loader.resources[asset] && !assetMap.has(asset)) {
+                    assetMap.set(asset, { name: asset, url: asset });
+                }
+            }
+            else {
+                if (!PIXI.loader.resources[asset.name] && !assetMap.has(asset.name)) {
+                    assetMap.set(asset.name, asset);
+                }
+            }
+        }
+        return Array.from(assetMap.values());
     }
 }
