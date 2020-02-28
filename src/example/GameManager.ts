@@ -12,6 +12,8 @@ export default class GameManager {
 	// 現在のシーン
 	private currentScene ?: Scene;
 
+	private sceneResourceLoaded : boolean = true;
+
 
 	/**
 	* コンストラクタ
@@ -73,14 +75,22 @@ export default class GameManager {
 		const instance = GameManager.instance;
 
 		if (instance.currentScene) {
+			instance.sceneResourceLoaded = false;
 			instance.sceneTransitionOutFinished = false;
+			newScene.beginLoadResource(() => {
+				instance.sceneResourceLoaded = true;
+				GameManager.transitionInIfPossible(newScene);
+			});
 			instance.currentScene.beginTransitionOut((_: Scene) => {
 				instance.sceneTransitionOutFinished = true;
 				GameManager.transitionInIfPossible(newScene);
 			});
 		} else {
 			instance.sceneTransitionOutFinished = true;
-			GameManager.transitionInIfPossible(newScene);
+			newScene.beginLoadResource(() => {
+				instance.sceneResourceLoaded = true;
+				GameManager.transitionInIfPossible(newScene);
+			});
 		}
 	}
 
