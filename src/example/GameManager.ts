@@ -49,7 +49,7 @@ export default class GameManager {
 	public static transitionInIfPossible(newScene: Scene): boolean {
 		const instance = GameManager.instance;
 
-		if (!instance.sceneTransitionOutFinished) {
+		if (!instance.sceneResourceLoaded || !instance.sceneTransitionOutFinished) {
 			return false;
 		}
 
